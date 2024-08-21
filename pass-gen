@@ -1,0 +1,36 @@
+#!/bin/sh
+
+
+help() {
+    printf "\
+    1: Enable all characters: Special Characters, normal Characters large and small, numbers \n\
+    2: Disable most special characters: Most used special Characters, normal Characters large and small, numbers \n\
+    3: Disable special characters: normal Characters large and small, numbers \n\
+    4: Disable special characters+numbers: normal Characters large and small \n\
+    5: Disable special characters+numbers+large Characters: normal Characters small"
+}
+
+if [ -z "$1" ]; then
+    echo "ERROR: Syntax: pass_gen {1-5} {normal arguments for: pass generate {THIS} }"
+    help
+    exit
+fi
+
+security="$1"
+shift
+
+if [ "$security" -eq 1 ]; then
+    export PASSWORD_STORE_CHARACTER_SET="qwfpbjluy;[]arstgmneio'xcdvzkh,./1234567890-=QWFPBJLUY:{}|ARSTGMNEIO\"XCDVZKH<>?!@#$%^&*()_+~"
+elif [ "$security" -eq 2 ]; then
+    export PASSWORD_STORE_CHARACTER_SET="qwfpbjluy;[]arstgmneioxcdvzkh/1234567890-QWFPBJLUY:ARSTGMNEIOXCDVZKH?!*()_+"
+elif [ "$security" -eq 3 ]; then
+    export PASSWORD_STORE_CHARACTER_SET="qwfpbjluyarstgmneioxcdvzkh1234567890QWFPBJLUYARSTGMNEIOXCDVZKH"
+elif [ "$security" -eq 4 ]; then
+    export PASSWORD_STORE_CHARACTER_SET="qwfpbjluyarstgmneioxcdvzkhQWFPBJLUYARSTGMNEIOXCDVZKH"
+elif [ "$security" -eq 5 ]; then
+    export PASSWORD_STORE_CHARACTER_SET="qwfpbjluyarstgmneioxcdvzkh"
+fi
+
+pass generate "$@"
+
+export PASSWORD_STORE_CHARACTER_SET=""

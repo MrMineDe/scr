@@ -1,0 +1,15 @@
+#!/bin/sh
+
+# We want to always +1 the keyboard lighting. But, if we reach the maximum we want to go back to 0 again
+
+#The led device vary at each devices
+DEVICE="tpacpi::kbd_backlight"
+PREV=$(cat /sys/class/leds/$DEVICE/brightness)
+MAX=$(cat /sys/class/leds/$DEVICE/max_brightness)
+NEW=$(($PREV+1))
+
+if [ "$NEW" -gt "$MAX" ]; then
+	NEW=0
+fi
+
+echo "$NEW" | sudo tee -a "/sys/class/leds/$DEVICE/brightness" > /dev/null

@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# We only want to call mpc if its installed, otherwise print an error
+command -v mpc >/dev/null && \
+echo "$( mpc -f '%artist% - %title%' | sed 1q)($(mpc status %volume%)) $(mpc status %currenttime%)" || \
+echo "Music not installed"

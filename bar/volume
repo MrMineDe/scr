@@ -1,0 +1,15 @@
+VOL=$(pulsemixer --get-volume | awk '{print $1}')
+MUTE=$(pulsemixer --get-mute)
+if [ $MUTE = 1 ]; then
+	echo 🔇$VOL
+elif [ $VOL -lt 1 ]; then
+	echo 🔇$VOL
+elif [ $VOL -lt 34 ]; then
+	echo 🔈$VOL
+elif [ $VOL -lt 67 ]; then
+	echo 🔉$VOL
+elif [ $VOL -le 100 ]; then
+	echo 🔊$VOL
+elif [ $VOL -le 200 ]; then
+	echo 🔴$VOL
+fi

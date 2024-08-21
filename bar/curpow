@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# simply returns the Watt powerdraw of the Battery, that is used atm
+
+BAT0=$(awk '{print $1*10^-6}' /sys/class/power_supply/BAT0/power_now)
+BAT1=$(awk '{print $1*10^-6}' /sys/class/power_supply/BAT1/power_now)
+if [ "$BAT0" -eq 0 ]; then
+	echo "$BAT1 W"
+else
+	echo "$BAT0 W"
+fi

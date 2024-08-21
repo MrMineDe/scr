@@ -1,0 +1,5 @@
+setxkbmap us -variant colemak_dh
+setxkbmap -option caps:escape
+xset r rate 300 50 #-- sorgt dafuer, dass keys schneller aufgenommen werden
+killall sxhkd
+sxhkd & disown

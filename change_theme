@@ -1,0 +1,60 @@
+#!/bin/sh
+
+# Requirements: sxiv, have pictures/wallpapers, wal, xwallpaper, xsetroot
+# Optional Requirements: st, qutebrowser
+
+# Xresources Location, you can change it, but why?
+X_LOC="$XDG_CONFIG_HOME/xresources"
+# Pywal cache Location, change it if it is different on your system, but it normally shouldnt
+WAL_LOC="$XDG_CACHE_HOME/wal/colors"
+# Your Wallpapers Directory, Change accordingly!
+WALL_DIR="$HOME/pic/wall"
+
+PIC=0
+# get a random pic/select one from user and set it to PIC
+if [ "$1" = "-l" ]; then
+	PIC=$(sxiv -ot "$WALL_DIR")
+	PIC=$(echo "$PIC" | awk '{ print $1 }')
+else
+	PIC=$(find "$WALL_DIR" -type f | shuf -n 1)
+fi
+
+if [ -z "$PIC" ]; then
+	PIC=$(find "$WALL_DIR" -type f | shuf -n 1)
+fi
+
+# create the pywal colors according to the pic
+wal -qni "$PIC" -s
+
+# Filing xresources with the correct colors, according the pywal colors
+{
+	awk 'NR==1{print "*.c1: ", $0} NR==9{print "*.c2: ", $0} NR==8{print "*.c3: ", $0} NR==3{print "*.c4: ", $0} NR==8{print "*.c5: ", $0} NR==8{print "*.c6: ", $0}' "$WAL_LOC"
+	awk '{print "*.color"NR-1":", $0}' "$WAL_LOC"
+} > "$X_LOC"
+echo "*.alpha: 0.8" >> "$X_LOC"
+echo "*.alphaunfocused: 0.7" >> "$X_LOC"
+# We only want to apply stuff if the xresources file got written correctly
+if [ -f "$X_LOC" ]; then
+	# change the wallpaper
+	xwallpaper --maximize "$PIC"
+	# Load the xresources file into X, so the changes get active
+	xrdb -merge "$X_LOC"
+	# Send dwm the message of the change so it reloads xresources
+	if [ "$(which dwm)" != "dwm not found" ]; then
+		xsetroot -name "fsignal:1"
+	fi
+	# Sends st the message of the change so it reloads xresources
+	if [ "$(which st)" != "st not found" ]; then
+		pidof st | xargs kill -s USR1
+	fi
+	# Configure qutebrowser if installed
+	if [ "$(which qutebrowser)" != "qutebrowser not found" ]; then
+		quteb_pid=$(pgrep qutebrowser)
+		if [ -z "$quteb_pid" ];
+		then
+			echo -v > /dev/null
+		else
+			qutebrowser :config-source
+		fi
+	fi
+fi

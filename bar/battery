@@ -1,0 +1,37 @@
+#!/bin/sh
+
+for PTH in /sys/class/power_supply/BAT*; do
+	# Current chare in %
+	CURP=$(cat "$PTH/capacity")
+	# max charge in Wh
+	FULL=$(($(cat "$PTH/energy_full") / 1000000))
+	# Current chare absolute
+	CUR=$(($(cat "$PTH/energy_now") / 1000000))
+	# Original Charge in Wh
+	ORIG=$(($(cat "$PTH/energy_full_design") / 1000000))
+	# Status of the battery (charge, discharge, full, etc)
+	CHARGE=$(cat "$PTH/status")
+	case "$CHARGE" in
+	"charging")
+		CHARGE="🔌"
+	;;
+	"Discharging")
+		CHARGE="⚡"
+	;;
+	"Not charging")
+		CHARGE="💤"
+	;;
+	"Full")
+		CHARGE="🔋"
+	;;
+	*)	
+		CHARGE="🔕"
+	;;
+	esac
+	# We want curent charge in %, max charge, current max charge vs factory max charge in % and then space out with ; if there is more than one battery
+	#OUTPUT="$(echo "$CHARGE $CUR($CURP%), Max: $FULL/$ORIG") | $OUTPUT"
+	OUTPUT="$(echo "$CHARGE $CUR($CURP%)")|$OUTPUT"
+done
+# Trim last "; " of the output, as it is TOO MUCH
+OUTPUT=${OUTPUT%??}
+echo "$OUTPUT"
