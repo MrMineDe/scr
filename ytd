@@ -1,0 +1,17 @@
+#!/bin/sh
+
+SearchTerm=$(echo | dmenu -c -s -l 5 -g 4 -p "What are you searching for?") &&
+Titel=$(ls -R "$HOME/music" |sed -r -n -e "/.mp3/p" | sed "s/.mp3//g ; /^\.\//d ; /^$/d" | dmenu -c -s -l 5 -g 4 -p "Titel") && #https://stackoverflow.com/questions/9541867/sed-delete-lines-not-containing-specific-string
+Artist=$(ls "$HOME/music/" | dmenu -c -s -l 5 -g 4 -p "Artist:") &&
+Genre=$(printf "Rap\nPop\nTrap\nRock\nKlassik\nEpic"| dmenu -c -s -l 5 -g 4 -p "Genre:") &&
+language=$(printf "Englisch\nDeutsch"| dmenu -c -s -l 5 -g 4 -p "Language:") &&
+Album=$(echo | dmenu -c -s -l 5 -g 4 -p "Album") && TrackNumber=$(echo | dmenu -c -s -l 5 -g 4 -p "Tracknumber:") &&
+
+yt-dlp ytsearch1:"$SearchTerm" -o "/tmp/ytdlp/tmp.mp3" --audio-format mp3 --prefer-ffmpeg -f bestaudio --audio-quality 0 &&
+
+mkdir "/home/$USER/music/$Artist/" &&
+mkdir "/home/$USER/music/$Artist/$Album/"
+
+ffmpeg -i /tmp/ytdlp/tmp.mp3 -metadata title="$Titel" -metadata artist="$Artist" -metadata genre="$Genre" -metadata language="$language" -metadata album="$Album" -metadata tracknumber="$TrackNumber" -vn "$HOME/music/$Artist/$Album/$Titel.mp3" &&
+
+rm "/tmp/ytdlp/tmp.mp3"

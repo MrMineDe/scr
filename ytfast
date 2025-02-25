@@ -1,0 +1,6 @@
+#!/bin/bash
+
+# This plays yt-vids about 2 seconds faster with mpv, than standard mpv
+yt-dlp -N 8 --no-part -f "bestaudio" "$1" -o /tmp/ytaudio | yt-dlp -f "bestvideo" "$1" -o - | mpv --audio-file="/tmp/ytaudio" -
+rm -rf /tmp/ytaudio
+
